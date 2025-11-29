@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:6.0
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/naijascout
+      - PORT=5000
+      - NODE_ENV=development
+      - CORS_ORIGIN=http://localhost:5173
+      - JWT_SECRET=dev-secret
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    # For production we run the image as-built. During development, you can
+    # mount the source directory but be careful to not hide container-installed
+    # node_modules. The mount is disabled by default here so the image's
+    # dependencies (installed at build time) are used.
+
+  frontend:
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:

@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.vscode
+.git
+backend/node_modules
+backend/.env
+backend/node_modules
+backend/.env
